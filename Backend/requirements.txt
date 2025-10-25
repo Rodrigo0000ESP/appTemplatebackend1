@@ -1,0 +1,50 @@
+# FastAPI Core Ecosystem - R Firm PyPI Packages
+# All packages published on October 18, 2025
+# Maintained by: R Firm (rodrigo0000)
+# PyPI Management: https://pypi.org/manage/projects/
+
+# Authentication & Authorization
+rodrigo0000-fastapi-core-auth
+
+# Configuration & Security
+rodrigo0000-fastapi-core-config
+
+# Controller Layer
+rodrigo0000-fastapi-core-controllers
+
+# Database Layer
+rodrigo0000-fastapi-core-database
+
+# Middleware Components
+rodrigo0000-fastapi-core-middleware
+
+# Data Models
+rodrigo0000-fastapi-core-models
+
+# Service Layer (Email, Stripe, Plans)
+rodrigo0000-fastapi-core-services
+
+# Utilities
+rodrigo0000-fastapi-core-utils
+
+# FastAPI Framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+
+# Database
+sqlalchemy>=2.0.36
+alembic>=1.12.1
+# psycopg2-binary==2.9.9  # Uncomment if using PostgreSQL
+
+# Environment & Config
+python-dotenv>=1.0.0
+pydantic>=2.10.5
+pydantic-settings>=2.6.0
+
+# Security
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.6
+
+# Additional utilities
+httpx>=0.25.2

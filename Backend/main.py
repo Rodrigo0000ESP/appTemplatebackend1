@@ -13,9 +13,8 @@ import os
 load_dotenv()
 
 # Import from installed PyPI packages
-from rodrigo0000_fastapi_core_middleware import setup_middleware
-from rodrigo0000_fastapi_core_database import init_db, get_db
-from rodrigo0000_fastapi_core_config import get_settings
+from fastapi_core_database import init_db, get_db
+from fastapi_core_config import get_settings
 
 # Initialize settings
 settings = get_settings()
@@ -26,9 +25,6 @@ app = FastAPI(
     version=settings.APP_VERSION,
     description="R Firm SaaS Backend using FastAPI Core Ecosystem"
 )
-
-# Setup middleware from rodrigo0000-fastapi-core-middleware
-setup_middleware(app)
 
 # CORS configuration
 app.add_middleware(
@@ -79,48 +75,46 @@ async def root():
     }
 
 
-# Import and include routers from controllers
-from app.controllers import (
-    auth_controller,
-    user_controller,
-    stripe_controller,
-    plan_controller,
-    email_controller
-)
+# Import routers from installed packages and local controllers
+from fastapi_core_auth import router as auth_router
+from app.controllers.user_controller_simple import router as user_router
+from app.controllers.stripe_controller_simple import router as stripe_router
+from app.controllers.email_controller_simple import router as email_router
+from app.controllers.plan_controller_simple import router as plan_router
 
-# Authentication endpoints
+# Authentication endpoints - using router from fastapi_core_auth package
 app.include_router(
-    auth_controller.router,
-    prefix="/api/v1/auth",
+    auth_router,
+    prefix="/api/v1",
     tags=["Authentication"]
 )
 
 # User management endpoints
 app.include_router(
-    user_controller.router,
+    user_router,
     prefix="/api/v1/users",
     tags=["Users"]
 )
 
 # Stripe/Payment endpoints
 app.include_router(
-    stripe_controller.router,
+    stripe_router,
     prefix="/api/v1/stripe",
     tags=["Stripe & Payments"]
 )
 
-# Plan management endpoints
-app.include_router(
-    plan_controller.router,
-    prefix="/api/v1/plans",
-    tags=["Plans"]
-)
-
 # Email endpoints
 app.include_router(
-    email_controller.router,
+    email_router,
     prefix="/api/v1/email",
     tags=["Email"]
+)
+
+# Plan management endpoints
+app.include_router(
+    plan_router,
+    prefix="/api/v1/plans",
+    tags=["Plans"]
 )
 
 

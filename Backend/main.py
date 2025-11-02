@@ -40,9 +40,6 @@ app.add_middleware(
 async def startup_event():
     """Initialize database on startup"""
     init_db()
-    print(f"✅ {settings.APP_NAME} v{settings.APP_VERSION} started successfully")
-    print(f"📦 Using PyPI packages: rodrigo0000-fastapi-core-*")
-    print(f"📍 Packages location: venv/lib/python3.x/site-packages/")
 
 
 @app.get("/health")

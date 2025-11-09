@@ -4,8 +4,9 @@ Uses R Firm PyPI packages from requirements.txt
 All packages are installed in: venv/lib/python3.x/site-packages/rodrigo0000_fastapi_core_*
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 import os
 
@@ -15,6 +16,7 @@ load_dotenv()
 # Import from installed PyPI packages
 from fastapi_core_database import init_db, get_db
 from fastapi_core_config import get_settings
+from fastapi_core_auth.exceptions import AuthenticationError
 
 # Initialize settings
 settings = get_settings()
@@ -26,14 +28,47 @@ app = FastAPI(
     description="R Firm SaaS Backend using FastAPI Core Ecosystem"
 )
 
-# CORS configuration
+# CORS configuration - DEBE IR PRIMERO
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=["*"],  # Permitir todos los orígenes temporalmente para debug
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Middleware to handle OPTIONS requests before validation
+@app.middleware("http")
+async def options_middleware(request: Request, call_next):
+    if request.method == "OPTIONS":
+        return Response(
+            status_code=200,
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept, Origin, X-Requested-With",
+                "Access-Control-Allow-Credentials": "true",
+            }
+        )
+    response = await call_next(request)
+    return response
+
+
+@app.exception_handler(AuthenticationError)
+async def authentication_exception_handler(request: Request, exc: AuthenticationError):
+    """Handle AuthenticationError and ensure CORS headers are present"""
+    return JSONResponse(
+        status_code=400,
+        content={
+            "detail": exc.detail.model_dump() if hasattr(exc.detail, 'model_dump') else exc.detail,
+        },
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept, Origin, X-Requested-With",
+            "Access-Control-Allow-Credentials": "true",
+        }
+    )
 
 
 @app.on_event("startup")
